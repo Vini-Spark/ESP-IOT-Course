@@ -10,14 +10,29 @@
 
 static const char *TAG = "MAIN";
 
+// Function to check room temperature
+void room_temperature_task(void)
+{
+    while (1) {
+        float temperature = get_temperature();
+        ESP_LOGI(TAG, "Room temperature: %.2f°C", temperature);
+        vTaskDelay(pdMS_TO_TICKS(1000));
+    }
+}
+
+
 void app_main(void)
 {
     // Initialize the thermistor (ADC configuration, etc.)
     thermistor_init();
 
-    while (1) {
-        float temperature = get_temperature();
-        ESP_LOGI(TAG, "Room Temperature: %.2f °C", temperature);
-        vTaskDelay(pdMS_TO_TICKS(300));
-    }
+    // Create a task to check the room temperature
+    xTaskCreate(&room_temperature_task, // Task function
+                "temperature_task",     // Task name
+                2048,                   // Stack size (bytes)
+                NULL,                   // Task parameters
+                1,                      // Task priority
+                NULL);                  // Task handle
+
+    
 }
